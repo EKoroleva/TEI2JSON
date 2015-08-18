@@ -30,51 +30,9 @@
                     <xsl:variable name="currentLineNumber" select="number(substring-after(@xml:id,'l'))"/>
                     <!-- On met une virgule entre les descriptions des lignes à partir de la deuxième ligne -->
                     <xsl:if test="position()!=1"> ,</xsl:if>
-                    
-                    <xsl:choose>
-                        <!-- Si la ligne n'est pas la dernière de la page, on applique ceci -->
-                        <xsl:when test="position()!=last()">
-                            
-                            {
-                            
-                            "@id":"http://demos.biblissima-condorcet.fr/iiif/metadata/BN_Latin2859/list/transscript_<xsl:value-of select="$currentLineNumber"/>.json",
-                            "@type":"oa:Annotation",
-                            "motivation":"sc:painting",
-                            "resource":{
-                            "@type":"cnt:ContentAsText",
-                            <!-- On exclut l'élément 'head' pour ne pas afficher son contenu dans le texte de la transcription -->
-                            <xsl:variable name="teiWithoutHead">
-                                <xsl:sequence select="/TEI/teiHeader|/TEI/text/body/div/node()[not(self::head)]"/>
-                            </xsl:variable>
-                            
-                            <!-- On choisit le texte entre le <lb> courant et le <lb> suivant -->
-                            <xsl:variable name="line">
-                                <xsl:value-of select="$teiWithoutHead//text()[. &gt;&gt; //lb[@n = $currentLineNumber] and . &lt;&lt; //lb[@n = ($currentLineNumber+1)]]"/>
-                            </xsl:variable>
-                            <!-- On affiche la ligne du texte sans espaces superflus -->
-                            "chars":"<xsl:value-of select="normalize-space($line)"/>",
-                            
-                            "format":"text/plain",
-                            "language":"fr-FR"
-                            },
-                            
-                            <!-- la valeur x de l'abscisse du coin supérieur gauche  -->
-                            <xsl:variable name="x"><xsl:value-of select="@ulx"/></xsl:variable>
-                            <!-- la valeur y de l'ordonnée du coin supérieur gauche  -->
-                            <xsl:variable name="y"><xsl:value-of select="@uly"/></xsl:variable> 
-                            <!-- largeur = la valeur x de l'abscisse du coin inférieur droit  -  la valeur x de l'abscisse du coin supérieur gauche  -->
-                            <xsl:variable name="w"><xsl:value-of select="@lrx - @ulx"/></xsl:variable>
-                            <!-- hauteur = la valeur y de l'ordonnée du coin inférieur droit  -  la valeur y de l'ordonnée du coin supérieur gauche  -->
-                            <xsl:variable name="h"><xsl:value-of select="@lry - @uly"/></xsl:variable>
-                            
-                            <xsl:text>"on":"http://gallica.bnf.fr/iiif/ark:/12148/btv1b8423837b/canvas/f</xsl:text><xsl:value-of select="substring-before(substring-after($graphicURL,'http://gallica.bnf.fr/ark:/12148/btv1b8423837b/f'), '.highres')"/><xsl:text>#xywh=</xsl:text><xsl:value-of select="($x)"/><xsl:text>,</xsl:text><xsl:value-of select="($y)"/><xsl:text>,</xsl:text><xsl:value-of select="($w)"/><xsl:text>,</xsl:text><xsl:value-of select="($h)"/><xsl:text>"</xsl:text>
-                            
-                            }
-                        </xsl:when>
-                        <!-- Si la ligne est la dernière de la page, on applique ceci -->
-                        <xsl:otherwise>
+                  
                             <xsl:choose>
-                                <!-- Si la ligne n'est pas la dernière du fichier xml (=elle est suivie par d'autres lignes sur les page suivantes), on applique ceci -->
+                                <!-- Si la ligne n'est pas la dernière du fichier xml (=elle est suivie par d'autres lignes sur les pages suivantes), on applique ceci -->
                                 <xsl:when test="/TEI/text/body//lb[@n = ($currentLineNumber+1)]">
                                     
                                     {
@@ -84,6 +42,7 @@
                                     "motivation":"sc:painting",
                                     "resource":{
                                     "@type":"cnt:ContentAsText",
+                                    <!-- On exclut l'élément 'head' pour ne pas afficher son contenu dans le texte de la transcription -->
                                     <xsl:variable name="teiWithoutHead">
                                         <xsl:sequence select="/TEI/teiHeader|/TEI/text/body/div/node()[not(self::head)]"/>
                                         
@@ -91,15 +50,19 @@
                                     <xsl:variable name="line">
                                         <xsl:value-of select="$teiWithoutHead//text()[. &gt;&gt; //lb[@n = $currentLineNumber] and . &lt;&lt; //lb[@n = ($currentLineNumber+1)]]"/>
                                     </xsl:variable>
+                                    <!-- On choisit le texte entre le <lb> courant et le <lb> suivant -->
                                     "chars":"<xsl:value-of select="normalize-space($line)"/>",
                                     "format":"text/plain",
                                     "language":"fr-FR"
                                     },
                                     
-                                    
+                                    <!-- la valeur x de l'abscisse du coin supérieur gauche  -->
                                     <xsl:variable name="x"><xsl:value-of select="@ulx"/></xsl:variable>
+                                    <!-- la valeur y de l'ordonnée du coin supérieur gauche  -->
                                     <xsl:variable name="y"><xsl:value-of select="@uly"/></xsl:variable> 
+                                    <!-- largeur = la valeur x de l'abscisse du coin inférieur droit  -  la valeur x de l'abscisse du coin supérieur gauche  -->
                                     <xsl:variable name="w"><xsl:value-of select="@lrx - @ulx"/></xsl:variable>
+                                    <!-- hauteur = la valeur y de l'ordonnée du coin inférieur droit  -  la valeur y de l'ordonnée du coin supérieur gauche  -->
                                     <xsl:variable name="h"><xsl:value-of select="@lry - @uly"/></xsl:variable>
                                     
                                     
@@ -140,8 +103,7 @@
                                     
                                 </xsl:otherwise>
                             </xsl:choose>
-                        </xsl:otherwise>
-                    </xsl:choose>
+                       
                 </xsl:for-each>
                 
                 ]
